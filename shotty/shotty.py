@@ -86,10 +86,18 @@ def instances():
     help="Create snapshots of all volumes")
 @click.option('--project', default=None,
     help="Only instances for project (tag Project:<name>)")
+@click.option('--force', 'force', default=False, is_flag=True,
+    help='forces snapshot on all instances')
 def create_snapshots(project):
     "Create snapshots for EC2 instances"
 
     instances = filter_instances(project)
+
+    if force == True:
+        print("forcing a snapshot on all instances")
+    elif project == None:
+        print("If --force is not set, the --project option must be set")
+        return
 
     for i in instances:
         print("Stopping {0}...".format(i.id))
@@ -137,10 +145,18 @@ def list_instances(project):
 @instances.command('stop')
 @click.option('--project', default=None,
     help='Only instances for project')
-def stop_instances(project):
+@click.option('--force', 'force', default=False, is_flag=True,
+    help='forces all instances to stop')
+def stop_instances(project, force):
     "Stop EC2 instances"
 
     instances = filter_instances(project)
+
+    if force == True:
+        print("forcing all instances to stop")
+    elif project == None:
+        print("If --force is not set, the --project option must be set")
+        return
 
     for i in instances:
         print("Stopping {0}...".format(i.id))
@@ -155,10 +171,18 @@ def stop_instances(project):
 @instances.command('start')
 @click.option('--project', default=None,
     help='Only instances for project')
-def start_instances(project):
+@click.option('--force', 'force', default=False, is_flag=True,
+    help='forces all instances to start')
+def start_instances(project, force):
     "Start EC2 instances"
 
     instances = filter_instances(project)
+
+    if force == True:
+        print("forcing all instances to start")
+    elif project == None:
+        print("If --force is not set, the --project option must be set")
+        return
 
     for i in instances:
         print("Starting {0}...".format(i.id))
@@ -172,11 +196,19 @@ def start_instances(project):
 
 @instances.command('reboot')
 @click.option('--project', default=None,
-    help='Onlly instances for project')
+    help='Only instances for project')
+@click.option('--force', 'force', default=False, is_flag=True,
+    help='forces all instances to reboot')
 def reboot_instances(project):
     "Reboot EC2 instances"
 
     instances = filter_instances(project)
+
+    if force == True:
+        print("forcing all instances to reboot")
+    elif project == None:
+        print("If --force is not set, the --project option must be set")
+        return
 
     for i in instances:
         print("Rebooting {0}...".format(i.id))
