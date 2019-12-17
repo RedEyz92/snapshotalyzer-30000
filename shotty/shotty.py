@@ -2,9 +2,6 @@ import boto3
 import botocore
 import click
 
-session = boto3.Session(profile_name='shotty')
-ec2 = session.resource('ec2')
-
 def filter_instances(project):
     instances = []
 
@@ -21,8 +18,27 @@ def filter_instances(project):
         return snapshots and snapshots[0].state == 'pending'
 
 @click.group()
-def cli():
-    """Shotty manages snapshots"""
+@click.option('--profile', 'profile', default='shotty',
+    help="Select profile to use for the AWS connection")
+def cli(profile):
+    """A custom script to manage EC2 and EBS snapshots"""
+    session = None
+    if profile:
+        try:
+            session = boto3.Session(profile_name=profile)
+            print("Using '{}' profile.".format(profile))
+        except botocore.exceptions.ProfileNotFound as e:
+            sys.exit("Unknown profile '{}'. ".format(profile) + str(e))
+    else:
+        session = boto3.Session(profile_name="default")
+        print("Using 'default' profile.")
+
+    global ec2
+    try:
+        ec2 = session.resource('ec2')
+    except:
+        sys.exit("AWS endpoint error")
+    return
 
 @cli.group('snapshots')
 def snapshots():
